@@ -1,0 +1,11 @@
+{
+  "name": "@sample/shared-ui",
+  "version": "1.0.0",
+  "private": true,
+  "peerDependencies": {
+    "react": "^17"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.5"
+  }
+}
