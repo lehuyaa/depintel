@@ -17,6 +17,13 @@ export interface WorkspacePackageJson {
   resolutions?: Record<string, string>;
 }
 
+export interface RootConfig {
+  path: string;
+  workspaces: string[];
+  overrides: Record<string, string | Record<string, string>>;
+  resolutions: Record<string, string>;
+}
+
 export interface WorkspaceInfo {
   name: string;
   version: string;
@@ -35,6 +42,9 @@ export interface DependencyRecord {
   declaredVersion: string;
   resolvedVersion: string | null;
   section: DependencySectionName;
+  overriddenByRoot: boolean;
+  rootForcedVersion: string | null;
+  resolvedBy: "none" | "root-override" | "root-resolution" | "lockfile";
 }
 
 export interface WorkspaceInventory {
@@ -50,5 +60,7 @@ export interface WorkspaceInventory {
 
 export interface InventoryResult {
   rootPath: string;
+  rootOverrides: Record<string, string | Record<string, string>>;
+  rootResolutions: Record<string, string>;
   workspaces: WorkspaceInventory[];
 }

@@ -16,9 +16,12 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.9.2",
-    "tsup": "^8.3.5",
     "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "yaml": "^2.8.3"
   }
 }

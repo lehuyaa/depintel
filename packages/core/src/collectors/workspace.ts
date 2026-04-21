@@ -1,19 +1,15 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import type { WorkspaceInfo, WorkspacePackageJson } from "../types.js";
+import type {
+  RootConfig,
+  WorkspaceInfo,
+  WorkspacePackageJson,
+} from "../types.js";
+import { pathExists } from "../utils.js";
 
 async function readJsonFile<T>(filePath: string): Promise<T> {
   const raw = await fs.readFile(filePath, "utf8");
   return JSON.parse(raw) as T;
-}
-
-async function pathExists(targetPath: string): Promise<boolean> {
-  try {
-    await fs.access(targetPath);
-    return true;
-  } catch {
-    return false;
-  }
 }
 
 async function listDirectories(dirPath: string): Promise<string[]> {
@@ -53,18 +49,26 @@ async function expandWorkspacePattern(
   return matched;
 }
 
-export async function discoverWorkspaces(
-  rootPath: string,
-): Promise<WorkspaceInfo[]> {
+export async function readRootConfig(rootPath: string): Promise<RootConfig> {
   const rootPackageJsonPath = path.join(rootPath, "package.json");
   const rootPackageJson =
     await readJsonFile<WorkspacePackageJson>(rootPackageJsonPath);
 
-  const workspacePatterns = rootPackageJson.workspaces ?? [];
+  return {
+    path: rootPath,
+    workspaces: rootPackageJson.workspaces ?? [],
+    overrides: rootPackageJson.overrides ?? {},
+    resolutions: rootPackageJson.resolutions ?? {},
+  };
+}
 
+export async function discoverWorkspaces(
+  rootPath: string,
+): Promise<WorkspaceInfo[]> {
+  const rootConfig = await readRootConfig(rootPath);
   const workspacePaths = new Set<string>();
 
-  for (const pattern of workspacePatterns) {
+  for (const pattern of rootConfig.workspaces) {
     const expanded = await expandWorkspacePattern(rootPath, pattern);
     for (const workspacePath of expanded) {
       workspacePaths.add(workspacePath);
